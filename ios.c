@@ -1,7 +1,9 @@
 /***   iOS Extension formats
  *
  * Support for iOS extension formats
- * StorageMetadata - Uuid of storage metadata
+ * 
+ * External Storage Metadata - Size, uuid and path of SQL Core-Data "External" storage 
+ *  Key: 'storaged'
  *
  */
 
@@ -27,6 +29,7 @@ SQLITE_EXTENSION_INIT1
 #define ERROR_INVALID_OBJECT_LENGTH 5
 #define ERROR_INVALID_REFERENCE 6
 #define ERROR_INVALID_CHARACTER 7
+#define ERROR_INVALID_CHARACTER 7
 
 const unsigned char MAGIC[4] = { 0x03, 0x23, 0x23, 0x23 };
 const int BUFFER_SIZE = 1024;
@@ -45,7 +48,7 @@ int get_byte(char c)
     return c & 0xff;
 }
 
-char *get_uuid(char *uuid, size_t sz)
+char *get_uuid(char *uuid, size_t sz, char **ptr_uuid)
 {
     char *buffer = malloc(BUFFER_SIZE);
     sprintf(buffer, " ");
@@ -54,19 +57,20 @@ char *get_uuid(char *uuid, size_t sz)
     }
     sprintf(buffer, "%s%#x\n", buffer, get_byte(uuid[sz-1]));
 
-    /* long line */
+    /* one long hex line */
     sprintf(buffer, "%s\t\t", buffer);
     for (int i=0; i<sz; i++) {
         sprintf(buffer, "%s%x", buffer, get_byte(uuid[i]));
     }
 
+    *ptr_uuid = buffer;
     return buffer;
 }
 
 int decodeExternalStorageBlob(unsigned char **result, const char *data, int dataLength)
 {
     const char fname[] = "decodeExternalStorageBlob";
-    char *output = malloc(1024);
+    char *output = malloc(BUFFER_SIZE*2);
     ExternalStorage_Hdr *ex_storage = (ExternalStorage_Hdr *) data;
     if (memcmp(MAGIC, ex_storage->magic, sizeof(MAGIC)))
     {
@@ -74,16 +78,19 @@ int decodeExternalStorageBlob(unsigned char **result, const char *data, int data
         return ERROR_INVALID_HEADER;
     }
 
-    sprintf(output, "Size: %#x (%d)\n", ex_storage->sz, ex_storage->sz);
-    sprintf(output, "%sUuid: %s\n", output, get_uuid(ex_storage->uuid, 16));
-    sprintf(output, "%sFilename: %s\n", output, ex_storage->path);
-    *result = output;
+    char *uuid_buf = NULL;
 
+    sprintf(output, "Size: %#x (%d)\n", ex_storage->sz, ex_storage->sz);
+    sprintf(output, "%sUuid: %s\n", output, get_uuid(ex_storage->uuid, 16, &uuid_buf));
+    sprintf(output, "%sFilename: %s\n", output, ex_storage->path);
+
+    free(uuid_buf);
+    *result = output;
     return ERROR_NONE;
 }
 
-/**  Wrapper functions
- *
+/**  
+ * Wrapper functions
  */
 
 void freeResult(void *ptr)
@@ -156,5 +163,5 @@ int sqlite3_extension_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routi
     return rc;
 }
 
-#endif /**/ COMPILE_SQLITE_EXTENSIONS_AS_LOADABLE_MODULE */
+#endif /* COMPILE_SQLITE_EXTENSIONS_AS_LOADABLE_MODULE */
 
