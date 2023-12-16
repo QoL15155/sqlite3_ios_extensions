@@ -8,22 +8,23 @@ Supported for both linux and windows.
 
 ## DB Browser
 
-Loading Extension
+Loading the extension
 + One-time 
     + Tools -> "Load Extension"
 + Permanent:
     + Edit -> Preferences -> Extensions -> 
 
-Edit column to add extension or -
+*Browse Data*: Edit the column's display format:
+![image](https://github.com/QoL15155/sqlite3_ios_extensions/assets/13380824/6b1323af-fff7-442e-858b-96cf3a2cdb9e)
 
-Execute SQL
+*Execute SQL*: run a query
 ``` sql
 select storaged(ZCOLUMN) from ZTABLE;
 ```
 
 
 ## SQLite3 shell:
-``` shell
+``` sh
 sqlite3 database.db
 # From inside the shell
 .load ./ios
@@ -41,6 +42,6 @@ Directories
 
 ## Linux
 
-``` shell
+``` sh
 gcc -g -fPIC -shared ios.c  -o ios.so
 ```
