@@ -15,7 +15,7 @@ Loading the extension
     + Edit -> Preferences -> Extensions -> 
 
 *Browse Data*: Edit the column's display format:
-![image](https://github.com/QoL15155/sqlite3_ios_extensions/assets/13380824/6b1323af-fff7-442e-858b-96cf3a2cdb9e)
+![DB Browser diff](https://github.com/QoL15155/sqlite3_ios_extensions/assets/13380824/6b1323af-fff7-442e-858b-96cf3a2cdb9e)
 
 *Execute SQL*: run a query
 ``` sql
