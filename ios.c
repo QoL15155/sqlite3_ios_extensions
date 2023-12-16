@@ -31,7 +31,6 @@ SQLITE_EXTENSION_INIT1
 const unsigned char MAGIC[4] = { 0x03, 0x23, 0x23, 0x23 };
 const int BUFFER_SIZE = 1024;
 
-/*long int uuid;*/
 typedef struct externalStorage_hdr {
     unsigned char magic[sizeof(MAGIC)];
     unsigned int sz;
@@ -40,23 +39,28 @@ typedef struct externalStorage_hdr {
     unsigned char path[0x24];
 } ExternalStorage_Hdr;
 
+
+int get_byte(char c)
+{
+    return c & 0xff;
+}
+
 char *get_uuid(char *uuid, size_t sz)
 {
     char *buffer = malloc(BUFFER_SIZE);
     sprintf(buffer, " ");
-    for (int i=0; i<sz; i++) {
-        sprintf(buffer, "%s%#x, ", buffer, uuid[i]&0xff);
+    for (int i=0; i<sz-1; i++) {
+        sprintf(buffer, "%s%#x, ", buffer, get_byte(uuid[i]));
     }
-    return buffer;
-}
+    sprintf(buffer, "%s%#x\n", buffer, get_byte(uuid[sz-1]));
 
-void dump_uuid(char *uuid, size_t sz)
-{
-    for (int i=0; i<sz; i++)
-    {
-        printf("%#x, ", uuid[i]&0xff);
+    /* long line */
+    sprintf(buffer, "%s\t\t", buffer);
+    for (int i=0; i<sz; i++) {
+        sprintf(buffer, "%s%x", buffer, get_byte(uuid[i]));
     }
-    printf("\n");
+
+    return buffer;
 }
 
 int decodeExternalStorageBlob(unsigned char **result, const char *data, int dataLength)
@@ -72,7 +76,7 @@ int decodeExternalStorageBlob(unsigned char **result, const char *data, int data
 
     sprintf(output, "Size: %#x (%d)\n", ex_storage->sz, ex_storage->sz);
     sprintf(output, "%sUuid: %s\n", output, get_uuid(ex_storage->uuid, 16));
-    sprintf(output, "%sPath: %s\n", output, ex_storage->path);
+    sprintf(output, "%sFilename: %s\n", output, ex_storage->path);
     *result = output;
 
     return ERROR_NONE;
@@ -134,7 +138,6 @@ static void externalStorageFunc(sqlite3_context *context, int argc, sqlite3_valu
 
 void RegisterExtensionFormats(sqlite3 *db)
 {
-    /*sqlite3_create_function(db, "externalStorageDecode", 1, 0, db, externalStorageFunc, 0, 0);*/
     sqlite3_create_function(db, "storaged", 1, 0, db, externalStorageFunc, 0, 0);
 }
 
