@@ -12,7 +12,7 @@ PROG = ios
 CC = cl
 FLAGS = /I include -link  -dll
 
-SRC = $(PROG).c
+SRC = src/$(PROG).c
 TARGET = $(OUT_DIR)/$(PROG).dll
 
 # Shell Commands

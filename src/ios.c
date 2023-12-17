@@ -154,8 +154,7 @@ void RegisterExtensionFormats(sqlite3 *db)
 __declspec(dllexport)
 #endif
 
-// int sqlite3_ios_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi)
-int sqlite3_extension_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi)
+int sqlite3_ios_init(sqlite3 *db, char **pzErrMsg, const sqlite3_api_routines *pApi)
 {
     int rc = SQLITE_OK;
     SQLITE_EXTENSION_INIT2(pApi);
