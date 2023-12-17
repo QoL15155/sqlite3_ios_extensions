@@ -36,12 +36,4 @@ sqlite3 database.db
 
 # Compilation
 
-Directories
-+ `include/` : Contains sqlite3 mandatory include files. Do NOT touch this folder!
-+ `out/` : Compilation output
-
-## Linux
-
-``` sh
-gcc -g -fPIC -shared ios.c  -o ios.so
-```
+Instructions are in [BUILDING](BUILDING.md)
